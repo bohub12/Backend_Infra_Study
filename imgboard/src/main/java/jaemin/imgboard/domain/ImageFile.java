@@ -11,4 +11,5 @@ public class ImageFile {
     private final String fileName;
     private String viewName;
     private String filePath;
+    private String suffix;
 }

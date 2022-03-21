@@ -17,7 +17,12 @@
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
 
-    my article
+    <ul th:each="img : ${imgList}">
+        <li>
+            <label th:for="${img.fileId}" th:text="${img.fileName}"></label>
+            <img th:src="@{images/{fileName}(fileName=${img.fileName})}"/>
+        </li>
+    </ul>
 
     <div class="w-100 d-flex justify-content-center align-content-center">
         <nav>

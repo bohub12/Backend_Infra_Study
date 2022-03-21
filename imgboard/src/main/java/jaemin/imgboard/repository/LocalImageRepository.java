@@ -2,12 +2,17 @@ package jaemin.imgboard.repository;
 
 import jaemin.imgboard.domain.ImageFile;
 import jaemin.imgboard.dto.ImageDto;
+import jaemin.imgboard.dto.ImageRenderDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,11 +29,11 @@ public class LocalImageRepository implements ImageRepository {
     /**
      *
      */
-    private final String uploadDir = "/Users/jaemin/desktop/test/";
-
+    private final String uploadDir = "/Users/jaemin/desktop/workspace/infra-study/imgboard/src/main/resources/static/images/";
     /**
      * dto 넘겨받아서 store에 저장
      * multipartfile 로컬에 저장
+     *
      * @param dto
      */
     @Override
@@ -43,7 +48,7 @@ public class LocalImageRepository implements ImageRepository {
             try {
                 file.transferTo(new File(fullPath));
                 ImageFile imageFile = new ImageFile(
-                        ++sequence, file.getOriginalFilename(), viewName, fullPath);
+                        ++sequence, file.getOriginalFilename(), viewName, fullPath, suffix);
                 store.put(imageFile.getFileId(), imageFile);
             } catch (IOException e) {
                 throw e;
@@ -75,7 +80,7 @@ public class LocalImageRepository implements ImageRepository {
             ImageFile target = store.get(fileId);
             log.info("target = {}", target);
             File targetFile = new File(target.getFilePath());
-            log.info("file = {}",targetFile.getPath());
+            log.info("file = {}", targetFile.getPath());
             if (targetFile.exists()) {
                 if (!targetFile.delete()) {
                     return false;
@@ -89,8 +94,22 @@ public class LocalImageRepository implements ImageRepository {
     }
 
     @Override
+    public List<ImageRenderDto> getImages() {
+        List<ImageRenderDto> list = getImageRenderDtos();
+        return list;
+    }
+
+    private List<ImageRenderDto> getImageRenderDtos() {
+        List<ImageRenderDto> list = new ArrayList<>();
+        getFileList().forEach(file -> {
+            list.add(new ImageRenderDto(
+                    file.getFileId(), file.getViewName() + "." + file.getSuffix()));
+        });
+        return list;
+    }
+
+    @Override
     public List<ImageFile> getFileList() {
-//        return new ArrayList<>(store.values());
-        return null;
+        return new ArrayList<>(store.values());
     }
 }

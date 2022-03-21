@@ -8,6 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter @ToString
 @AllArgsConstructor
 public class ImageDto {
-    private String viewName;
-    private MultipartFile file;
+    private final String viewName;
+    private final MultipartFile file;
 }
