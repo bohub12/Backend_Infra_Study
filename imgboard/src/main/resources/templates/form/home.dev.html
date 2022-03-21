@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <link th:href="@{/css/bootstrap.min.css}"
+          href="../css/bootstrap.min.css" rel="stylesheet">
+    <title th:text="${title}"></title>
+</head>
+<body>
+<div class="container">
+    <div class="pt-5 text-center">
+        <h2>Image Board</h2>
+    </div>
+
+    <hr>
+
+    <form class="d-flex flex-row justify-content-around">
+        <input class="form-control w-50" type="file">
+        <input class="form-control w-25" type="text" placeholder="제목">
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
+    my article
+
+    <div class="w-100 d-flex justify-content-center align-content-center">
+        <nav>
+            <ul class="pagination">
+                <li class="page-item">
+                    <span class="page-link"><</span>
+                </li>
+                <li class="page-item">
+                <span class="page-link">
+                    1
+                </span>
+                </li>
+                <li class="page-item">
+                <span class="page-link">
+                    2
+                </span>
+                </li>
+                <li class="page-item">
+                <span class="page-link">
+                    3
+                </span>
+                </li>
+                <li class="page-item">
+                    <span class="page-link">></span>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+</div>
+</body>
+</html>
