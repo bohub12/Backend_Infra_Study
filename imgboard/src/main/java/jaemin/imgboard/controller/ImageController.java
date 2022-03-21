@@ -27,9 +27,15 @@ public class ImageController {
     }
 
     @PostMapping("/upload")
-    public String uploadImage(@ModelAttribute ImageDto dto) throws IOException {
+    public String uploadImage(@ModelAttribute ImageDto dto) throws Exception {
         imageService.saveUploadedImage(dto);
         log.info("Controller : dto = {}", dto);
+        return "redirect:/";
+    }
+
+    @GetMapping("/delete/{fieldId}")
+    public String deleteImage(@PathVariable Long fieldId) throws Exception {
+        imageService.deleteImage(fieldId);
         return "redirect:/";
     }
 }
