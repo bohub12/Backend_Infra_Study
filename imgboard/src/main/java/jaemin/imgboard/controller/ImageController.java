@@ -1,18 +1,23 @@
 package jaemin.imgboard.controller;
 
-import jaemin.imgboard.dto.ImageDto;
+import jaemin.imgboard.dto.ImageRenderDto;
+import jaemin.imgboard.dto.ImageUploadDto;
 import jaemin.imgboard.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Slf4j
 @Controller
@@ -24,12 +29,34 @@ public class ImageController {
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("imgList", imageService.loadImages());
+        model.addAttribute("images", imageService.getImageIdList());
         return "form/home";
     }
 
+    @GetMapping("/image/{fileId}")
+    public @ResponseBody
+    ResponseEntity<Resource> showImage(@PathVariable Long fileId) {
+        ImageRenderDto dto = imageService.loadImages(fileId);
+
+        Resource resource = dto.getResource();
+        String filePath = dto.getFilePath();
+
+        if (!resource.exists()) {
+            return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
+        }
+
+        HttpHeaders header = new HttpHeaders();
+        try {
+            header.add("Content-Type", Files.probeContentType(Paths.get(filePath)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<Resource>(resource,header,HttpStatus.OK);
+    }
+
     @PostMapping("/upload")
-    public String uploadImage(@ModelAttribute ImageDto dto) throws Exception {
+    public String uploadImage(@ModelAttribute ImageUploadDto dto) throws Exception {
         imageService.saveUploadedImage(dto);
         log.info("Controller : dto = {}", dto);
         return "redirect:/";

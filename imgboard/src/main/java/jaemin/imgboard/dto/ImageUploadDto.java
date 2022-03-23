@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter @ToString
 @AllArgsConstructor
-public class ImageDto {
+public class ImageUploadDto {
     private final String viewName;
     private final MultipartFile file;
 }

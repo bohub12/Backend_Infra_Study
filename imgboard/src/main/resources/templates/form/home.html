@@ -2,6 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragment/head :: head(|Image Board|)}">
 </head>
+<style>
+    .imgBox {
+        width: 200px;
+        height: 200px;
+    }
+</style>
 <body>
 <div class="container">
     <div class="pt-5 text-center">
@@ -17,10 +23,12 @@
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
 
-    <ul th:each="img : ${imgList}">
+    <ul th:each="img : ${images}">
         <li>
-            <label th:for="${img.fileId}" th:text="${img.fileName}"></label>
-            <img th:src="@{images/{fileName}(fileName=${img.fileName})}"/>
+            <label th:for="${img.fileId}" th:text="${img.viewName}"></label>
+            <div class="imgBox d-flex justify-content-center align-content-center border-1">
+                <img class="img-fluid" th:src="@{/image/{img}(img=${img.fileId})}" th:id="${img.fileId}">
+            </div>
         </li>
     </ul>
 

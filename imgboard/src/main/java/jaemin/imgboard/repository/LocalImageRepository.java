@@ -1,15 +1,14 @@
 package jaemin.imgboard.repository;
 
 import jaemin.imgboard.domain.ImageFile;
-import jaemin.imgboard.dto.ImageDto;
+import jaemin.imgboard.dto.ImageMetaDto;
+import jaemin.imgboard.dto.ImageUploadDto;
 import jaemin.imgboard.dto.ImageRenderDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,7 +28,9 @@ public class LocalImageRepository implements ImageRepository {
     /**
      *
      */
-    private final String uploadDir = "/Users/jaemin/desktop/workspace/infra-study/imgboard/src/main/resources/static/images/";
+    private final String uploadDir = "/Users/jaemin/desktop/uploaded/";
+
+
     /**
      * dto 넘겨받아서 store에 저장
      * multipartfile 로컬에 저장
@@ -37,7 +38,7 @@ public class LocalImageRepository implements ImageRepository {
      * @param dto
      */
     @Override
-    public void save(ImageDto dto) throws Exception {
+    public void save(ImageUploadDto dto) throws Exception {
 
         MultipartFile file = dto.getFile();
         String viewName = dto.getViewName();
@@ -94,22 +95,19 @@ public class LocalImageRepository implements ImageRepository {
     }
 
     @Override
-    public List<ImageRenderDto> getImages() {
-        List<ImageRenderDto> list = getImageRenderDtos();
-        return list;
-    }
+    public ImageRenderDto read(Long fileId) {
+        ImageFile imageMeta = store.get(fileId);
 
-    private List<ImageRenderDto> getImageRenderDtos() {
-        List<ImageRenderDto> list = new ArrayList<>();
-        getFileList().forEach(file -> {
-            list.add(new ImageRenderDto(
-                    file.getFileId(), file.getViewName() + "." + file.getSuffix()));
-        });
-        return list;
+        String imagePath = imageMeta.getFilePath();
+        return new ImageRenderDto(new FileSystemResource(imagePath),imagePath);
     }
 
     @Override
-    public List<ImageFile> getFileList() {
-        return new ArrayList<>(store.values());
+    public List<ImageMetaDto> getImageList() {
+        List<ImageMetaDto> list = new ArrayList<>();
+        store.keySet().forEach(key->{
+            list.add(new ImageMetaDto(key, store.get(key).getViewName()));
+        });
+        return list;
     }
 }
