@@ -6,11 +6,12 @@ import jaemin.imgboard.dto.ImageUploadDto;
 import jaemin.imgboard.dto.ImageRenderDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import javax.annotation.PostConstruct;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,6 +91,7 @@ public class LocalImageRepository implements ImageRepository {
         } catch (NullPointerException e) {
             throw e;
         } finally {
+            store.remove(fileId);
             return true;
         }
     }
@@ -109,5 +111,25 @@ public class LocalImageRepository implements ImageRepository {
             list.add(new ImageMetaDto(key, store.get(key).getViewName()));
         });
         return list;
+    }
+
+    /**
+     * Test Function : Initiation
+     * @throws IOException
+     */
+    @PostConstruct
+    public void testInit() throws Exception {
+
+        File file = new File("/Users/jaemin/desktop/test.png");
+
+        InputStream input = new FileInputStream(file);
+        MultipartFile mFile = new MockMultipartFile("test", input);
+
+        String viewName = "0";
+        for (int i = 0; i < 10; i++) {
+            viewName = String.valueOf((Integer.parseInt(viewName) + 1));
+            ImageUploadDto dto = new ImageUploadDto(viewName,  mFile);
+            this.save(dto);
+        }
     }
 }
