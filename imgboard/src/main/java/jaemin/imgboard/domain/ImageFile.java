@@ -5,11 +5,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter @Setter @ToString
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class ImageFile {
     private final Long fileId;
     private final String fileName;
-    private String viewName;
-    private String filePath;
-    private String suffix;
+    private final String viewName;
+    private final String filePath;
+    private final String suffix;
 }

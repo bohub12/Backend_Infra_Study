@@ -4,6 +4,8 @@ import jaemin.imgboard.domain.ImageFile;
 import jaemin.imgboard.dto.ImageMetaDto;
 import jaemin.imgboard.dto.ImageUploadDto;
 import jaemin.imgboard.dto.ImageRenderDto;
+import jaemin.imgboard.mapper.ImageMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mock.web.MockMultipartFile;
@@ -19,6 +21,7 @@ import java.util.Map;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class LocalImageRepository implements ImageRepository {
 
     private static final Map<Long, ImageFile> store = new HashMap<>();
@@ -31,6 +34,7 @@ public class LocalImageRepository implements ImageRepository {
      */
     private final String uploadDir = "/Users/jaemin/desktop/uploaded/";
 
+    private final ImageMapper imageMapper;
 
     /**
      * dto 넘겨받아서 store에 저장
@@ -130,6 +134,12 @@ public class LocalImageRepository implements ImageRepository {
             viewName = String.valueOf((Integer.parseInt(viewName) + 1));
             ImageUploadDto dto = new ImageUploadDto(viewName,  mFile);
             this.save(dto);
+        }
+
+        List<ImageFile> list = imageMapper.selectAll();
+        log.info("list.size() = {}", list.size());
+        for (ImageFile imageFile : list) {
+            log.info("imageFile = {}", imageFile);
         }
     }
 }
