@@ -162,3 +162,6 @@ buildNumber.properties
 # MAC OS
 *.DS_STORE
 
+# APP META
+application.properties
+application.yml
