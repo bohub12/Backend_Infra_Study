@@ -23,15 +23,6 @@
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
 
-<!--    <ul th:each="img : ${images}">-->
-<!--        <li>-->
-<!--            <label th:for="${img.fileId}" th:text="${img.viewName}"></label>-->
-<!--            <div class="imgBox d-flex justify-content-center align-content-center border-1">-->
-<!--                <img class="img-fluid" th:src="@{/image/{img}(img=${img.fileId})}" th:id="${img.fileId}">-->
-<!--            </div>-->
-<!--        </li>-->
-<!--    </ul>-->
-
     <div class="d-flex flex-row flex-wrap justify-content-center">
         <div class="d-flex flex-column m-3" th:each="img : ${images}">
             <label class="text-center" th:for="${img.fileId}" th:text="${img.viewName}"></label>

@@ -15,17 +15,14 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Repository
 @RequiredArgsConstructor
 public class LocalImageRepository implements ImageRepository {
 
-    private static final Map<Long, ImageFile> store = new HashMap<>();
-    private static long sequence = 0L;
+    private final ImageMapper imageMapper;
 
     private final String PERIOD = "\\.";
 
@@ -33,8 +30,6 @@ public class LocalImageRepository implements ImageRepository {
      *
      */
     private final String uploadDir = "/Users/jaemin/desktop/uploaded/";
-
-    private final ImageMapper imageMapper;
 
     /**
      * dto 넘겨받아서 store에 저장
@@ -54,8 +49,9 @@ public class LocalImageRepository implements ImageRepository {
             try {
                 file.transferTo(new File(fullPath));
                 ImageFile imageFile = new ImageFile(
-                        ++sequence, file.getOriginalFilename(), viewName, fullPath, suffix);
-                store.put(imageFile.getFileId(), imageFile);
+                        file.getOriginalFilename(), viewName, fullPath, suffix);
+                log.info("imageFile = {}", imageFile);
+                imageMapper.save(imageFile);
             } catch (IOException e) {
                 throw e;
             }
@@ -83,10 +79,8 @@ public class LocalImageRepository implements ImageRepository {
     public boolean delete(Long fileId) throws Exception {
         log.info("DELETE START");
         try {
-            ImageFile target = store.get(fileId);
-            log.info("target = {}", target);
+            ImageFile target = imageMapper.selectById(fileId);
             File targetFile = new File(target.getFilePath());
-            log.info("file = {}", targetFile.getPath());
             if (targetFile.exists()) {
                 if (!targetFile.delete()) {
                     return false;
@@ -95,33 +89,35 @@ public class LocalImageRepository implements ImageRepository {
         } catch (NullPointerException e) {
             throw e;
         } finally {
-            store.remove(fileId);
+            imageMapper.delete(fileId);
             return true;
         }
     }
 
     @Override
     public ImageRenderDto read(Long fileId) {
-        ImageFile imageMeta = store.get(fileId);
+        ImageFile imageMeta = imageMapper.selectById(fileId);
 
         String imagePath = imageMeta.getFilePath();
-        return new ImageRenderDto(new FileSystemResource(imagePath),imagePath);
+        return new ImageRenderDto(new FileSystemResource(imagePath), imagePath);
     }
 
     @Override
     public List<ImageMetaDto> getImageList() {
         List<ImageMetaDto> list = new ArrayList<>();
-        store.keySet().forEach(key->{
-            list.add(new ImageMetaDto(key, store.get(key).getViewName()));
-        });
+        List<ImageFile> imageList = imageMapper.selectAll();
+        for (ImageFile image : imageList) {
+            list.add(new ImageMetaDto(image.getFileId(), image.getViewName()));
+        }
         return list;
     }
 
     /**
      * Test Function : Initiation
+     *
      * @throws IOException
      */
-    @PostConstruct
+//    @PostConstruct
     public void testInit() throws Exception {
 
         File file = new File("/Users/jaemin/desktop/test.png");
@@ -132,7 +128,7 @@ public class LocalImageRepository implements ImageRepository {
         String viewName = "0";
         for (int i = 0; i < 10; i++) {
             viewName = String.valueOf((Integer.parseInt(viewName) + 1));
-            ImageUploadDto dto = new ImageUploadDto(viewName,  mFile);
+            ImageUploadDto dto = new ImageUploadDto(viewName, mFile);
             this.save(dto);
         }
 
