@@ -2,7 +2,7 @@ drop table if exists image;
 
 create table image
 (
-    fileId   bigint       not null,
+    fileId   bigint auto_increment not null,
     fileName varchar(255) not null,
     viewName varchar(255) not null,
     filePath varchar(255) not null,
