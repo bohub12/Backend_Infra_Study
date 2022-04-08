@@ -8,8 +8,8 @@ import java.util.List;
 @Mapper
 public interface ImageMapper {
 
-    @Insert("INSERT INTO IMAGE VALUES( #{fileId}, #{fileName}, #{viewName}, #{filePath}, #{suffix} )")
-    @Options(useGeneratedKeys = true, keyProperty = "fileId")
+    @Insert("INSERT INTO IMAGE(filename,viewname,filepath,suffix)" +
+            " VALUES( '${fileName}', '${viewName}', '${filePath}', '${suffix}' )")
     void save(ImageFile imageFile);
 
     @Select("SELECT * FROM IMAGE WHERE fileId = #{fileId}")
